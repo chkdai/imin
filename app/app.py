@@ -99,7 +99,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / 'data'
 
 df = pd.read_csv(DATA_DIR / 'streamlit.csv')
-df['割合'] = round(df['外国人人口'] / df['総人口'] * 100, 2)
+df.rename(columns={'外国人人口':'外国人'})
+df['割合'] = round(df['外国人'] / df['総人口'] * 100, 1)
 
 st.title('外国人人口割合')
 
@@ -124,16 +125,16 @@ else:
     df_display = df_display.sort_values('割合', ascending=False)
 
 # 表示カラムを選択
-display_cols = ['都道府県', '市区町村', '総人口', '外国人人口', '割合']
+display_cols = ['都道府県', '市区町村', '総人口', '外国人', '割合']
 df_styled = df_display[display_cols].reset_index(drop=True)
 
 # ヒートマップスタイルを適用
 styled = df_styled.style.format({
     '総人口': '{:,.0f}',
-    '外国人人口': '{:,.0f}',
+    '外国人': '{:,.0f}',
     '割合': '{:.2f}'
 }).background_gradient(
-    subset=['総人口', '外国人人口', '割合'],
+    subset=['総人口', '外国人', '割合'],
     cmap='Purples'
 )
 
@@ -141,4 +142,4 @@ st.dataframe(styled, hide_index=True, use_container_width=True)
 
 # フッター
 st.markdown('---')
-st.markdown('Source: [総務省 住民基本台帳に基づく人口、人口動態及び世帯数](https://www.soumu.go.jp/main_sosiki/jichi_gyousei/daityo/jinkou_jinkoudoutai-setaisuu.html)')
+st.markdown('Source: [総務省 住民基本台帳に基づく人口](https://www.soumu.go.jp/main_sosiki/jichi_gyousei/daityo/jinkou_jinkoudoutai-setaisuu.html)')
