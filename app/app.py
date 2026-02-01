@@ -99,7 +99,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / 'data'
 
 df = pd.read_csv(DATA_DIR / 'streamlit.csv')
-df.rename(columns={'外国人人口':'外国人'})
+df = df.rename(columns={'外国人人口':'外国人'})
 df['割合'] = round(df['外国人'] / df['総人口'] * 100, 1)
 
 st.title('外国人人口割合')
