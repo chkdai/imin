@@ -2,6 +2,98 @@ import streamlit as st
 import pandas as pd
 from pathlib import Path
 
+# 動的なスタイル調整
+st.markdown("""
+<style>
+    /* フォントを見やすく */
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&display=swap');
+
+    [data-testid="stDataFrame"] {
+        font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        font-size: 16px !important;
+        -webkit-font-smoothing: antialiased !important;
+    }
+
+    [data-testid="stDataFrame"] td, [data-testid="stDataFrame"] th {
+        font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        letter-spacing: 0.02em !important;
+    }
+
+    /* デスクトップ */
+    [data-testid="stDataFrame"] > div {
+        height: calc(100vh - 350px) !important;
+        max-height: calc(100vh - 350px) !important;
+    }
+
+    /* モバイル（幅600px以下） */
+    @media (max-width: 600px) {
+        /* 上部の余白を削減 */
+        .block-container {
+            padding-top: 3rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+
+        /* タイトル */
+        h1 {
+            font-size: 1.4rem !important;
+            margin: 0 0 0.5rem 0 !important;
+            padding: 0 !important;
+        }
+
+        /* セレクトボックスの余白削減 */
+        [data-testid="stSelectbox"] {
+            margin-bottom: 0.5rem !important;
+        }
+
+        /* テーブルの高さ */
+        [data-testid="stDataFrame"] > div {
+            height: calc(100vh - 280px) !important;
+            max-height: calc(100vh - 280px) !important;
+        }
+
+        /* フッター */
+        .stMarkdown p, .stMarkdown a {
+            font-size: 0.85rem !important;
+        }
+
+        hr {
+            margin: 0.3rem 0 !important;
+        }
+    }
+
+    /* モバイル横向き */
+    @media (max-width: 900px) and (orientation: landscape) {
+        .block-container {
+            padding-top: 1rem !important;
+            padding-bottom: 0.3rem !important;
+        }
+
+        h1 {
+            font-size: 1rem !important;
+            margin: 0 0 0.3rem 0 !important;
+        }
+
+        [data-testid="stSelectbox"] {
+            margin-bottom: 0.3rem !important;
+        }
+
+        [data-testid="stDataFrame"] > div {
+            height: calc(100vh - 180px) !important;
+            max-height: calc(100vh - 180px) !important;
+            min-height: 150px !important;
+        }
+
+        .stMarkdown p, .stMarkdown a {
+            font-size: 0.75rem !important;
+        }
+
+        hr {
+            margin: 0.2rem 0 !important;
+        }
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # スクリプトの場所を基準にパスを解決
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / 'data'
@@ -33,4 +125,20 @@ else:
 
 # 表示カラムを選択
 display_cols = ['都道府県', '市区町村', '総人口', '外国人人口', '割合']
-st.dataframe(df_display[display_cols].reset_index(drop=True))
+df_styled = df_display[display_cols].reset_index(drop=True)
+
+# ヒートマップスタイルを適用
+styled = df_styled.style.format({
+    '総人口': '{:,.0f}',
+    '外国人人口': '{:,.0f}',
+    '割合': '{:.2f}'
+}).background_gradient(
+    subset=['総人口', '外国人人口', '割合'],
+    cmap='Purples'
+)
+
+st.dataframe(styled, hide_index=True, use_container_width=True)
+
+# フッター
+st.markdown('---')
+st.markdown('Source: [総務省 住民基本台帳に基づく人口、人口動態及び世帯数](https://www.soumu.go.jp/main_sosiki/jichi_gyousei/daityo/jinkou_jinkoudoutai-setaisuu.html)')
