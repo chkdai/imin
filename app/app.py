@@ -139,8 +139,8 @@ else:
     df_wards = df_pref[df_pref['level'] == 'ward']
     df_display = pd.concat([df_cities_without_wards, df_wards])
 
-    # 割合で降順ソート
-    df_display = df_display.sort_values('割合', ascending=False)
+    # 比率で降順ソート
+    df_display = df_display.sort_values('比率', ascending=False)
 
 # 表示カラムを選択
 display_cols = ['都道府県', '市区町村', '総人口', '外国人', '比率']
@@ -152,7 +152,7 @@ styled = df_styled.style.format({
     '外国人': '{:,.0f}',
     '比率': '{:.1f}'
 }).background_gradient(
-    subset=['総人口', '外国人', '割合'],
+    subset=['総人口', '外国人', '比率'],
     cmap='Purples'
 ).set_properties(**{'text-align': 'center'}).set_table_styles([
     {'selector': 'th', 'props': [('text-align', 'center')]},
