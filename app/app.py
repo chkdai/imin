@@ -27,8 +27,10 @@ st.markdown("""
     }
 
     .custom-table th, .custom-table td {
-        padding: 8px 12px;
+        padding: 6px 8px;
         border-bottom: 1px solid #e0e0e0;
+        white-space: nowrap;
+        font-size: 14px;
     }
 
     .custom-table th {
@@ -58,9 +60,14 @@ st.markdown("""
             margin-bottom: 0.5rem !important;
         }
 
-        /* テーブルの高さ */
+        /* テーブルの高さとフォント */
         .custom-table {
             height: calc(100vh - 280px) !important;
+        }
+
+        .custom-table th, .custom-table td {
+            font-size: 12px !important;
+            padding: 4px 6px !important;
         }
 
         /* フッター */
