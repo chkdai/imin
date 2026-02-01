@@ -14,16 +14,28 @@ st.markdown("""
         -webkit-font-smoothing: antialiased !important;
     }
 
-    [data-testid="stDataFrame"] td, [data-testid="stDataFrame"] th {
-        font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif !important;
-        letter-spacing: 0.02em !important;
-        text-align: center !important;
+    /* カスタムテーブル */
+    .custom-table {
+        height: calc(100vh - 350px);
+        overflow-y: auto;
+        overflow-x: auto;
     }
 
-    /* デスクトップ */
-    [data-testid="stDataFrame"] > div {
-        height: calc(100vh - 350px) !important;
-        max-height: calc(100vh - 350px) !important;
+    .custom-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .custom-table th, .custom-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .custom-table th {
+        position: sticky;
+        top: 0;
+        background: #f0f2f6;
+        font-weight: 500;
     }
 
     /* モバイル（幅600px以下） */
@@ -47,9 +59,8 @@ st.markdown("""
         }
 
         /* テーブルの高さ */
-        [data-testid="stDataFrame"] > div {
+        .custom-table {
             height: calc(100vh - 280px) !important;
-            max-height: calc(100vh - 280px) !important;
         }
 
         /* フッター */
@@ -78,9 +89,8 @@ st.markdown("""
             margin-bottom: 0.3rem !important;
         }
 
-        [data-testid="stDataFrame"] > div {
+        .custom-table {
             height: calc(100vh - 180px) !important;
-            max-height: calc(100vh - 180px) !important;
             min-height: 150px !important;
         }
 
@@ -137,9 +147,17 @@ styled = df_styled.style.format({
 }).background_gradient(
     subset=['総人口', '外国人', '割合'],
     cmap='Purples'
-).set_properties(**{'text-align': 'center'})
+).set_properties(**{'text-align': 'center'}).set_table_styles([
+    {'selector': 'th', 'props': [('text-align', 'center')]},
+    {'selector': 'td', 'props': [('text-align', 'center')]}
+]).hide(axis='index')
 
-st.dataframe(styled, hide_index=True, use_container_width=True)
+# HTMLテーブルとして表示（スクロール対応）
+st.markdown(f"""
+<div class="custom-table">
+{styled.to_html()}
+</div>
+""", unsafe_allow_html=True)
 
 # フッター
 st.markdown('---')
