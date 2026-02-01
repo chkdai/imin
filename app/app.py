@@ -17,6 +17,7 @@ st.markdown("""
     [data-testid="stDataFrame"] td, [data-testid="stDataFrame"] th {
         font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif !important;
         letter-spacing: 0.02em !important;
+        text-align: center !important;
     }
 
     /* デスクトップ */
@@ -136,7 +137,7 @@ styled = df_styled.style.format({
 }).background_gradient(
     subset=['総人口', '外国人', '割合'],
     cmap='Purples'
-)
+).set_properties(**{'text-align': 'center'})
 
 st.dataframe(styled, hide_index=True, use_container_width=True)
 
