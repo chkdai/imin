@@ -124,22 +124,7 @@ st.title('外国人比率')
 
 # 都道府県の選択
 pref_list = df[df['level'] == 'pref']['都道府県'].tolist()
-options = ['全国'] + pref_list
-
-# クエリパラメータから選択値を取得
-query_params = st.query_params
-selected_pref = query_params.get('pref', '全国')
-if selected_pref not in options:
-    selected_pref = '全国'
-
-# ネイティブHTML selectでキーボードポップアップを防止
-options_html = ''.join([f'<option value="{opt}" {"selected" if opt == selected_pref else ""}>{opt}</option>' for opt in options])
-st.markdown(f'''
-<label style="font-size: 14px; color: #31333F;">都道府県を選択</label>
-<select id="pref-select" style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;" onchange="window.location.href='?pref=' + this.value">
-{options_html}
-</select>
-''', unsafe_allow_html=True)
+selected_pref = st.selectbox('都道府県を選択', ['全国'] + pref_list, label_visibility='collapsed')
 
 if selected_pref == '全国':
     # 全国：都道府県一覧を表示（都道府県番号の昇順）
