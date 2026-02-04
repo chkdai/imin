@@ -37,10 +37,13 @@ def render(data_dir, df):
     # ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
     
     fig.update_layout(
-        yaxis=dict(title='', showgrid=False, automargin=False),
+        yaxis=dict(title='', showgrid=False, automargin=False, fixedrange=True, dtick=100,
+                   range=[0, df_jinko['外国人人口（万人）'].max() * 1.1]),
         yaxis2=dict(title='', showgrid=False, overlaying='y', side='right',
-                    range=[0, 4], dtick=1, automargin=False),
-        legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5),
+                    range=[0, 4], dtick=1, automargin=False, fixedrange=True),
+        xaxis=dict(fixedrange=True),
+        legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5,
+                    itemclick=False, itemdoubleclick=False),
         margin=dict(l=30, r=30, t=30, b=30), height=320,
         dragmode=False,
     )
