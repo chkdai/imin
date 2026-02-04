@@ -6,7 +6,7 @@ import tab_zairyugaikokujin
 def render(data_dir):
     df_jinko = pd.read_csv(data_dir / 'jinkosuikei.csv')
 
-    st.markdown('##### 外国人数・比率推移（全国）')
+    st.markdown('##### 外国人数・比率推移')
     df_jinko['外国人人口（万人）'] = df_jinko['外国人人口'] / 10
 
     fig = go.Figure()

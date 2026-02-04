@@ -146,8 +146,9 @@ def render(data_dir, key_prefix='tab1'):
         fig1 = px.line(
             df_chart_data, x='集計時点', y='人口', color=color_col,
             category_orders={color_col: order_list, '集計時点': date_order},
-            markers=True, labels={'人口': '在留外国人数', '集計時点': ''}
+            labels={'人口': '在留外国人数', '集計時点': ''}
         )
+        fig1.update_traces(mode='lines+markers')
         fig1.update_layout(
             xaxis_tickangle=-45, hovermode='x unified', height=450,
             margin=dict(l=40, r=20, t=50, b=30),
