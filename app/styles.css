@@ -1,0 +1,131 @@
+/* フォントを見やすく */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&display=swap');
+
+[data-testid="stDataFrame"] {
+    font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 16px !important;
+    -webkit-font-smoothing: antialiased !important;
+}
+
+/* カスタムテーブル */
+.custom-table {
+    max-height: calc(100vh - 350px);
+    overflow-y: auto;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+}
+
+.custom-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.custom-table th, .custom-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #e0e0e0;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.custom-table th {
+    position: sticky;
+    top: 0;
+    background: #f0f2f6;
+    font-weight: 500;
+}
+
+/* Bootstrapスタイルのタブ */
+[data-testid="stTabs"] [role="tablist"] {
+    border-bottom: 1px solid #dee2e6 !important;
+    gap: 0 !important;
+}
+
+[data-testid="stTabs"] button {
+    color: #007bff !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    border-radius: 0.25rem 0.25rem 0 0 !important;
+    padding: 0.5rem 1rem !important;
+    margin-bottom: -1px !important;
+}
+
+[data-testid="stTabs"] button:hover {
+    border-color: #e9ecef #e9ecef #dee2e6 !important;
+}
+
+[data-testid="stTabs"] button[aria-selected="true"] {
+    color: #495057 !important;
+    font-weight: 500 !important;
+    background: #fff !important;
+    border-color: #dee2e6 #dee2e6 #fff !important;
+}
+
+/* モバイル（幅600px以下） */
+@media (max-width: 600px) {
+    /* 上部の余白を削減 */
+    .block-container {
+        padding-top: 3rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+
+    /* タイトル */
+    h1 {
+        font-size: 1.4rem !important;
+        margin: 0 0 0.5rem 0 !important;
+        padding: 0 !important;
+    }
+
+    /* セレクトボックスの余白削減 */
+    [data-testid="stSelectbox"] {
+        margin-bottom: 0.5rem !important;
+    }
+
+    /* テーブルの高さとフォント */
+    .custom-table {
+        height: calc(100vh - 280px) !important;
+    }
+
+    .custom-table th, .custom-table td {
+        font-size: 12px !important;
+        padding: 4px 6px !important;
+    }
+
+    /* フッター */
+    .stMarkdown p, .stMarkdown a {
+        font-size: 0.85rem !important;
+    }
+
+    hr {
+        margin: 0.3rem 0 !important;
+    }
+}
+
+/* モバイル横向き */
+@media (max-width: 900px) and (orientation: landscape) {
+    .block-container {
+        padding-top: 1rem !important;
+        padding-bottom: 0.3rem !important;
+    }
+
+    h1 {
+        font-size: 1rem !important;
+        margin: 0 0 0.3rem 0 !important;
+    }
+
+    [data-testid="stSelectbox"] {
+        margin-bottom: 0.3rem !important;
+    }
+
+    .custom-table {
+        height: calc(100vh - 180px) !important;
+        min-height: 150px !important;
+    }
+
+    .stMarkdown p, .stMarkdown a {
+        font-size: 0.75rem !important;
+    }
+
+    hr {
+        margin: 0.2rem 0 !important;
+    }
+}
