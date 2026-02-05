@@ -57,7 +57,12 @@ def render(data_dir):
         margin=dict(l=30, r=30, t=30, b=30), height=320,
         dragmode=False,
     )
-    st.plotly_chart(fig, use_container_width=True, config={
+    # st.plotly_chart(fig, use_container_width=True, config={
+    #     'displayModeBar': False, 'scrollZoom': False,
+    # })
+
+    # 修正案：ユニークなキーを追加
+    st.plotly_chart(fig, use_container_width=True, key="national_main_chart", config={
         'displayModeBar': False, 'scrollZoom': False,
     })
 
