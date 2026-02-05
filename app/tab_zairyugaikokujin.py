@@ -212,3 +212,48 @@ def render(data_dir, key_prefix='tab1'):
         )
         st.plotly_chart(fig_bar2, use_container_width=True, config={'displayModeBar': False, 'scrollZoom': False}, key=f'{key_prefix}_chart2')
     st.markdown('<p style="font-size:12px; color:gray; margin-top:-10px;">Source: 出入国在留管理庁 在留外国人統計</p>', unsafe_allow_html=True)
+
+    # --- テーブル: 外国人数・比率推移 ---
+    st.markdown(f'###### 外国人数・比率推移テーブル{filter_label}')
+
+    # フィルタに応じたデータ取得
+    if selected_country != '全国籍':
+        df_table = df_zairyu[df_zairyu['国籍・地域'] == selected_country].copy()
+    elif selected_region != '全地域' and selected_region != '無国籍':
+        lo, hi = REGION_CODE_RANGE[selected_region]
+        df_table = df_zairyu[(df_zairyu['cat02_code'] >= lo) & (df_zairyu['cat02_code'] <= hi)].copy()
+    elif selected_region == '無国籍':
+        df_table = df_zairyu[df_zairyu['国籍・地域'] == '無国籍'].copy()
+    else:
+        df_table = df_zairyu[df_zairyu['国籍・地域'] == '総数'].copy()
+
+    # 在留資格フィルタ
+    if selected_visa == '全在留資格':
+        df_table = df_table[df_table['在留資格'] == '総数']
+    else:
+        visa_keys = [k for k, v in CATEGORY_MAP.items() if v == selected_visa]
+        df_table = df_table[df_table['在留資格'].isin(visa_keys)]
+
+    # 集計時点ごとに合算
+    df_table = df_table.groupby(['集計時点', '_sort_key'], as_index=False)['人口'].sum()
+    df_table = df_table.sort_values('_sort_key')
+
+    # 増減数・増減率計算
+    df_table['増減数'] = df_table['人口'].diff()
+    df_table['増減率'] = (df_table['増減数'] / df_table['人口'].shift(1) * 100).round(1)
+    df_table = df_table[['集計時点', '人口', '増減数', '増減率']].rename(columns={'集計時点': '時点'})
+
+    # 最新を上に
+    df_table = df_table.iloc[::-1].reset_index(drop=True)
+
+    styled_table = df_table.style.format({
+        '人口': '{:,.0f}',
+        '増減数': lambda x: f'{x:+,.0f}' if pd.notna(x) else '-',
+        '増減率': lambda x: f'{x:+.1f}%' if pd.notna(x) else '-'
+    }).background_gradient(
+        subset=['人口'],
+        cmap='Blues'
+    ).hide(axis='index')
+
+    st.markdown(f'<div class="custom-table">{styled_table.to_html()}</div>', unsafe_allow_html=True)
+    st.markdown('<p style="font-size:12px; color:gray; margin-top:-10px;">Source: 出入国在留管理庁 在留外国人統計</p>', unsafe_allow_html=True)
