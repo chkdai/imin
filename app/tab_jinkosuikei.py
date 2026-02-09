@@ -72,8 +72,8 @@ def render(data_dir):
 def render_pref(data_dir):
     """都道府県別タブ: 外国人数推移 + 都道府県別比率 + 国籍別・在留資格別グラフ"""
     st.markdown('##### 都道府県別 / 市区町村別')
-    # 都道府県リストをparquetから取得
-    df_daicho_all = pd.read_parquet(data_dir / 'parquet' / 'estat_daicho.parquet')
+    # 都道府県リストをCSVから取得
+    df_daicho_all = pd.read_csv(data_dir / 'daicho_estat.csv')
     pref_list = sorted(df_daicho_all['都道府県名'].unique().tolist())
     selected_pref = st.selectbox('都道府県を選択', ['全国'] + pref_list, label_visibility='collapsed', key='tab_pref_select')
     pref_filter = '総数' if selected_pref == '全国' else selected_pref
