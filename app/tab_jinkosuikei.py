@@ -71,10 +71,10 @@ def render(data_dir):
 
 def render_pref(data_dir):
     """都道府県別タブ: 外国人数推移 + 都道府県別比率 + 国籍別・在留資格別グラフ"""
-    st.markdown('##### 都道府県別 / 市区町村別')
-    # 都道府県リストをCSVから取得
+    # 都道府県リストをCSVから取得（都道府県番号順）
     df_daicho_all = pd.read_csv(data_dir / 'daicho_estat.csv')
-    pref_list = sorted(df_daicho_all['都道府県名'].unique().tolist())
+    df_daicho_all['pref_code'] = df_daicho_all['団体コード'].astype(str).str.zfill(6).str[:2]
+    pref_list = df_daicho_all[['pref_code', '都道府県名']].drop_duplicates().sort_values('pref_code')['都道府県名'].tolist()
     selected_pref = st.selectbox('都道府県を選択', ['全国'] + pref_list, label_visibility='collapsed', key='tab_pref_select')
     pref_filter = '総数' if selected_pref == '全国' else selected_pref
 
@@ -262,10 +262,10 @@ def render_pref(data_dir):
 
 def render_country(data_dir):
     """国籍別タブ: フィルター + グラフ + 都道府県別テーブル"""
-    # フィルター（一番上）
+    # フィルター（一番上）- COUNTRY_ORDERの順序で表示
     df_country_long = pd.read_csv(data_dir / 'zairyu_pref_country.csv')
-    country_list = df_country_long['国籍'].unique().tolist()
-    country_list = ['すべての国籍'] + [c for c in country_list if c != '総数']
+    available_countries = set(df_country_long['国籍'].unique()) - {'総数'}
+    country_list = ['すべての国籍'] + [c for c in COUNTRY_ORDER if c in available_countries]
     selected_country = st.selectbox('国籍を選択', country_list, label_visibility='collapsed', key='country_tab_filter')
 
     # 総数をフィルターの下に表示
@@ -323,10 +323,10 @@ def render_country(data_dir):
 
 def render_status(data_dir):
     """在留資格別タブ: フィルター + グラフ + 都道府県別テーブル"""
-    # フィルター（一番上）
+    # フィルター（一番上）- STATUS_ORDERの順序で表示
     df_status_long = pd.read_csv(data_dir / 'zairyu_pref_status.csv')
-    status_list = df_status_long['在留資格'].unique().tolist()
-    status_list = ['すべての在留資格'] + [s for s in status_list if s != '総数']
+    available_statuses = set(df_status_long['在留資格'].unique()) - {'総数'}
+    status_list = ['すべての在留資格'] + [s for s in STATUS_ORDER if s in available_statuses]
     selected_status = st.selectbox('在留資格を選択', status_list, label_visibility='collapsed', key='status_tab_filter')
 
     # 総数をフィルターの下に表示
