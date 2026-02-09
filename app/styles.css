@@ -9,7 +9,7 @@
 
 /* カスタムテーブル */
 .custom-table {
-    max-height: calc(100vh - 350px);
+    max-height: 70vh;
     overflow-y: auto;
     overflow-x: auto;
     margin-bottom: 1rem;
