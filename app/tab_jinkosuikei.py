@@ -100,12 +100,12 @@ def render_pref(data_dir):
         line=dict(color='#EF553B', width=2), marker=dict(size=5), yaxis='y2',
     ))
     fig_trend.update_layout(
-        yaxis=dict(title='', showgrid=False, fixedrange=True),
-        yaxis2=dict(title='', showgrid=False, overlaying='y', side='right', fixedrange=True, ticksuffix='%'),
+        yaxis=dict(title='', showgrid=False, automargin=False, fixedrange=True),
+        yaxis2=dict(title='', showgrid=False, overlaying='y', side='right', automargin=False, fixedrange=True, ticksuffix='%'),
         xaxis=dict(fixedrange=True, dtick=1),
         legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5,
                     itemclick=False, itemdoubleclick=False),
-        margin=dict(l=50, r=50, t=30, b=30), height=320,
+        margin=dict(l=30, r=30, t=30, b=30), height=320,
         dragmode=False,
     )
     st.plotly_chart(fig_trend, use_container_width=True, key='pref_trend_chart', config={'displayModeBar': False, 'scrollZoom': False})
