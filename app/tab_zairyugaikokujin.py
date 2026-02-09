@@ -6,18 +6,18 @@ import plotly.express as px
 CATEGORY_MAP = {
     '特別永住者': '特別永住者',
     '永住者': '永住者',
-    '永住者の配偶者等': '配偶者等',
-    '日本人の配偶者等': '配偶者等',
+    '永住者の配偶者等': 'その他',
+    '日本人の配偶者等': 'その他',
     '家族滞在': '家族滞在',
     '定住者': '定住者',
-    '特定技能１号': '特定技能・技能実習',
-    '特定技能２号': '特定技能・技能実習',
-    '技能実習１号イ': '特定技能・技能実習',
-    '技能実習１号ロ': '特定技能・技能実習',
-    '技能実習２号イ': '特定技能・技能実習',
-    '技能実習２号ロ': '特定技能・技能実習',
-    '技能実習３号イ': '特定技能・技能実習',
-    '技能実習３号ロ': '特定技能・技能実習',
+    '特定技能１号': '特定技能',
+    '特定技能２号': '特定技能',
+    '技能実習１号イ': '技能実習',
+    '技能実習１号ロ': '技能実習',
+    '技能実習２号イ': '技能実習',
+    '技能実習２号ロ': '技能実習',
+    '技能実習３号イ': '技能実習',
+    '技能実習３号ロ': '技能実習',
     '留学': '留学',
     '特定活動': '特定活動',
     '技術・人文知識・国際業務': '技術・人文知識・国際業務',
@@ -38,7 +38,15 @@ REGION_CODE_RANGE = {
     '北アメリカ': (4001, 4999), '南アメリカ': (5001, 5999), 'オセアニア': (6001, 6999),
 }
 
-VISA_GROUPS = ['全在留資格'] + sorted(set(CATEGORY_MAP.values()))
+# 在留資格グループの表示順序（STATUS_ORDERに準拠）
+VISA_GROUP_ORDER = ['永住者', '技術・人文知識・国際業務', '特定技能', '技能実習', '留学', '家族滞在',
+                    '定住者', '特定活動', '特別永住者', '経営・管理', 'その他']
+VISA_GROUPS = ['全在留資格'] + VISA_GROUP_ORDER
+
+# 主要国籍リスト（「その他」判定用）
+MAIN_COUNTRIES = ['中国', 'ベトナム', '韓国・朝鮮', 'フィリピン', 'ネパール', 'インドネシア', 'ブラジル',
+                  'ミャンマー', 'スリランカ', '台湾', '米国', 'タイ', 'インド', 'ペルー', 'バングラデシュ',
+                  'パキスタン', 'カンボジア', 'モンゴル', '英国']
 
 
 def _date_sort_key(s):
@@ -125,7 +133,14 @@ def render(data_dir, key_prefix='tab1', ext_country=None, ext_visa=None, show_fi
     else:
         chart_title_suffix = ''
 
-    if selected_country != '全国籍':
+    if selected_country == 'その他':
+        # 「その他」= MAIN_COUNTRIESに含まれない国籍を全て合算して1本の線で表示
+        st.markdown(f'###### 国籍別 在留外国人の推移{chart_title_suffix}')
+        df_chart_data = df_filtered[~df_filtered['国籍・地域'].isin(MAIN_COUNTRIES + REGIONS + ['総数', '無国籍'])].copy()
+        df_chart_data['国籍・地域'] = 'その他'
+        df_chart_data = df_chart_data.groupby(['集計時点', '国籍・地域', '_sort_key'], as_index=False)['人口'].sum()
+        color_col = '国籍・地域'
+    elif selected_country != '全国籍':
         st.markdown(f'###### 国籍別 在留外国人の推移{chart_title_suffix}')
         df_chart_data = df_filtered[df_filtered['国籍・地域'] == selected_country].copy()
         color_col = '国籍・地域'
@@ -196,7 +211,10 @@ def render(data_dir, key_prefix='tab1', ext_country=None, ext_visa=None, show_fi
     st.markdown('<p style="font-size:12px; color:gray; margin-top:-10px;">Source: 出入国在留管理庁 在留外国人統計</p>', unsafe_allow_html=True)
 
     # --- チャート2: 在留資格グループ別推移 ---
-    if selected_country != '全国籍':
+    if selected_country == 'その他':
+        # 「その他」= MAIN_COUNTRIESに含まれない国籍を集約
+        df_visa = df_zairyu[~df_zairyu['国籍・地域'].isin(MAIN_COUNTRIES + REGIONS + ['総数', '無国籍'])].copy()
+    elif selected_country != '全国籍':
         df_visa = df_zairyu[df_zairyu['国籍・地域'] == selected_country].copy()
     elif selected_region != '全地域' and selected_region != '無国籍':
         lo, hi = REGION_CODE_RANGE[selected_region]
@@ -217,12 +235,10 @@ def render(data_dir, key_prefix='tab1', ext_country=None, ext_visa=None, show_fi
     df_visa = df_visa.sort_values('_sort_key')
 
     if len(df_visa) > 0:
-        visa_latest = df_visa.loc[df_visa['_sort_key'].idxmax(), '集計時点']
         visa_date_order = df_visa.drop_duplicates('集計時点').sort_values('_sort_key')['集計時点'].tolist()
-        visa_order = (
-            df_visa[df_visa['集計時点'] == visa_latest]
-            .sort_values('人口', ascending=False)['在留資格グループ'].tolist()
-        )
+        # VISA_GROUP_ORDERの順序で凡例を表示（データに存在するもののみ）
+        available_groups = df_visa['在留資格グループ'].unique().tolist()
+        visa_order = [g for g in VISA_GROUP_ORDER if g in available_groups]
         fig_bar2 = px.bar(
             df_visa, x='集計時点', y='人口', color='在留資格グループ',
             category_orders={'在留資格グループ': visa_order, '集計時点': visa_date_order},

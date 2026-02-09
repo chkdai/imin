@@ -91,6 +91,12 @@ df_status_long = df_status.melt(
     value_name='人口'
 )
 
+###############################################
+# 韓国・朝鮮を統一
+###############################################
+df_country_long['国籍'] = df_country_long['国籍'].replace({'韓国': '韓国・朝鮮', '朝鮮': '韓国・朝鮮'})
+df_country_long = df_country_long.groupby(['都道府県', '国籍', '時点'], as_index=False)['人口'].sum()
+
 print("\n=== 国籍別 ===")
 print(df_country_long.head())
 print("\n=== 在留資格別 ===")
